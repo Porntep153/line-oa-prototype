@@ -1,4 +1,4 @@
-
+<!DOCTYPE html>
 <html lang="th">
 <head>
     <meta charset="UTF-8">
@@ -255,24 +255,19 @@
     </div>
 
     <script>
-        // REPLACE_WITH_YOUR_DEPLOYED_GAS_WEB_APP_URL
-        const GAS_WEB_APP_URL = "REPLACE_WITH_YOUR_DEPLOYED_GAS_WEB_APP_URL";
+        // ***สำคัญ***: GAS Web App URL ของคุณ
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFTO3dMZYqAUaI-VDvLEgyafesLiWGY9cY7WOWXcweOmPz4HHyTomE0AE1qmjZf65krg/exec"; 
         const OPEN_CHAT_URL = "https://line.me/ti/g2/YOUR_OPENCHAT_ID"; // **IMPORTANT**: Replace with actual OpenChat link
 
         let userId = '';
         let hasCheckedInToday = false;
 
-        // แก้ไข: ลบ document.addEventListener('DOMContentLoaded') เพื่อเรียก initializeLiff ทันที
-        // เพื่อแก้ไขปัญหา ReferenceError: liff is not defined ในบางสภาพแวดล้อม
-        // document.addEventListener('DOMContentLoaded', () => {
-        //     initializeLiff();
-        // });
-
         initializeLiff(); // เรียกใช้งานทันที
 
         async function initializeLiff() {
             try {
-                await liff.init({ liffId: 'REPLACE_WITH_YOUR_LIFF_ID' }); // **IMPORTANT**: Replace with actual LIFF ID
+                // LIFF ID Dashboard
+                await liff.init({ liffId: '2008192818-vW2RZNkO' }); 
 
                 if (!liff.isLoggedIn()) {
                     liff.login();
@@ -294,14 +289,7 @@
         }
 
         async function fetchGas(action, data = {}) {
-            if (GAS_WEB_APP_URL.includes("REPLACE_WITH_YOUR_DEPLOYED_GAS_WEB_APP_URL")) {
-                 Swal.fire({
-                    icon: 'error',
-                    title: 'ข้อผิดพลาดการตั้งค่า',
-                    text: 'กรุณาแทนที่ GAS_WEB_APP_URL ด้วย URL จริงของ GAS Web App ก่อน'
-                });
-                return { success: false, message: "Configuration error." };
-            }
+            // ไม่ต้องเช็ค Placeholder แล้ว เพราะแทนที่ URL จริงแล้ว
             const payload = { action, userId, ...data };
             const response = await fetch(GAS_WEB_APP_URL, {
                 method: 'POST',
