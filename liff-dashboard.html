@@ -3,178 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard | เลิกสูบ</title>
+    <title>แดชบอร์ดความก้าวหน้า</title>
     <script src="https://static.line-scdn.net/liff/sdk/v2/liff.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --primary-color: #7952B3; /* Purple */
-            --secondary-color: #6FBC82; /* Green */
-            --bg-color: #F4F7F6;
-            --font-family: 'Inter', sans-serif;
-        }
-        body {
-            font-family: var(--font-family);
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            min-height: 100vh;
-            color: #333;
-        }
-        .container {
-            width: 100%;
-            max-width: 500px;
-            padding: 16px;
-            box-sizing: border-box;
-        }
-        .card {
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f4f7f6; }
+        .stat-card {
             background-color: white;
-            padding: 20px;
-            margin-bottom: 16px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-        h1 {
-            color: var(--primary-color);
-            margin-top: 0;
-            font-size: 1.5rem;
-            text-align: center;
-        }
-        .stat-display {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .stat-value {
-            font-size: 4rem; /* ≥ 4rem */
-            font-weight: 700;
-            color: var(--primary-color);
-            line-height: 1;
-        }
-        .stat-label {
-            font-size: 1rem;
-            color: #555;
-            margin-top: 4px;
-        }
-        .small-stat-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            padding: 16px;
             margin-bottom: 16px;
         }
-        .small-stat-card {
-            padding: 15px;
-            background-color: #e9eef2;
-            border-radius: 8px;
-            text-align: center;
-        }
-        .small-stat-value {
-            font-size: 1.5rem;
-            font-weight: 600;
-            color: var(--secondary-color);
-            line-height: 1.2;
-        }
-        .small-stat-label {
-            font-size: 0.8rem;
-            color: #777;
-        }
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-bottom: 10px;
-        }
-        .btn-checkin {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-        .btn-checkin.disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        .btn-checkin:not(.disabled):active {
-            background-color: #5aa170;
-        }
-        .btn-openchat {
-            background-color: #e6e6e6;
-            color: #333;
-        }
-        .btn-openchat:active {
-            background-color: #d1d1d1;
-        }
-        .milestone-list {
-            list-style: none;
-            padding: 0;
-            margin: 10px 0 0;
-        }
-        .milestone-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            padding: 8px 0;
-            border-bottom: 1px dashed #eee;
-        }
-        .milestone-item:last-child {
-            border-bottom: none;
-        }
-        .milestone-icon {
-            font-size: 1.5rem;
-            margin-right: 10px;
-        }
-        .met {
-            color: var(--secondary-color);
-        }
-        .pending {
-            color: #ccc;
-        }
-        .initial-setup {
-            text-align: center;
-            padding: 30px 10px;
-            background-color: #fff3cd;
-            color: #856404;
-            border-radius: 12px;
-        }
-        .initial-setup h2 {
-            margin-top: 0;
-            font-size: 1.2rem;
-        }
-        .input-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
-        .input-group label {
-            display: block;
-            font-weight: 600;
-            margin-bottom: 5px;
-            color: #333;
-        }
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            box-sizing: border-box;
-            font-size: 1rem;
-        }
-        .btn-setup {
-            background-color: var(--primary-color);
-            color: white;
-            margin-top: 20px;
-        }
-        .hidden {
-            display: none !important;
-        }
+        .header-bg { background-color: #7952B3; }
+        .text-primary { color: #7952B3; }
+        .bg-secondary { background-color: #6FBC82; }
+        .hidden { display: none !important; }
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -187,86 +34,109 @@
             align-items: center;
             z-index: 1000;
             font-size: 1.2rem;
-            color: var(--primary-color);
+            color: #7952B3;
         }
     </style>
 </head>
-<body>
-    <div class="loading-overlay" id="loading">กำลังโหลด...</div>
-    <div class="container hidden" id="main-content">
+<body class="p-4 sm:p-6 min-h-screen">
+    <div class="loading-overlay" id="loading">กำลังโหลด LIFF และข้อมูล...</div>
+    
+    <!-- Main Content Container (Hidden until initialized) -->
+    <div id="main-content" class="container mx-auto max-w-lg hidden">
 
-        <!-- Initial Setup Form -->
-        <div class="card initial-setup hidden" id="setup-form">
-            <h2>ยินดีต้อนรับ! กรุณากรอกข้อมูลเริ่มต้น</h2>
-            <p>ข้อมูลนี้จะช่วยคำนวณสถิติความสำเร็จของคุณ</p>
+        <!-- Header -->
+        <header class="header-bg p-4 rounded-t-xl shadow-lg">
+            <h1 class="text-xl font-bold text-white text-center">🏆 แดชบอร์ดความก้าวหน้า</h1>
+        </header>
 
-            <div class="input-group">
-                <label for="startDate">วันที่เริ่มต้นเลิกสูบ (วัน/เดือน/ปี)</label>
-                <input type="date" id="startDate" required>
-            </div>
-            <div class="input-group">
-                <label for="cigsPerDay">จำนวนบุหรี่ที่สูบต่อวันโดยเฉลี่ย</label>
-                <input type="number" id="cigsPerDay" value="10" min="1" required>
-            </div>
-            <div class="input-group">
-                <label for="costPerPack">ราคาบุหรี่ 1 ซอง (20 มวน) โดยประมาณ (บาท)</label>
-                <input type="number" id="costPerPack" value="120" min="1" required>
-            </div>
-
-            <button class="btn btn-setup" onclick="handleInitialSetup()">บันทึกข้อมูลและเริ่มใช้งาน</button>
+        <!-- Initial Setup Form (Hidden by default) -->
+        <div id="setup-view" class="stat-card p-6 rounded-b-xl hidden">
+            <h2 class="text-lg font-semibold text-primary mb-4 text-center">ตั้งค่าเริ่มต้นเพื่อบันทึกความก้าวหน้า</h2>
+            <p class="text-sm text-gray-600 mb-6 text-center">กรุณาให้ข้อมูลเบื้องต้นเพื่อคำนวณเงินที่ประหยัดได้</p>
+            
+            <form id="setup-form">
+                <div class="mb-4">
+                    <label for="startDate" class="block text-sm font-medium text-gray-700 mb-1">วันที่เริ่มต้นเลิกสูบ:</label>
+                    <input type="date" id="startDate" required class="w-full p-2 border border-gray-300 rounded-lg">
+                </div>
+                <div class="mb-4">
+                    <label for="cigsPerDay" class="block text-sm font-medium text-gray-700 mb-1">จำนวนบุหรี่ที่สูบต่อวันโดยเฉลี่ยก่อนเลิก:</label>
+                    <input type="number" id="cigsPerDay" min="1" required class="w-full p-2 border border-gray-300 rounded-lg">
+                </div>
+                <div class="mb-6">
+                    <label for="costPerPack" class="block text-sm font-medium text-gray-700 mb-1">ราคาบุหรี่ 1 ซอง (20 มวน) โดยประมาณ (บาท):</label>
+                    <input type="number" id="costPerPack" min="10" required class="w-full p-2 border border-gray-300 rounded-lg">
+                </div>
+                <button type="submit" class="w-full bg-secondary text-white font-semibold py-3 rounded-lg hover:opacity-90 transition">บันทึกและเริ่มติดตาม</button>
+            </form>
         </div>
 
-        <!-- Dashboard Content -->
-        <div id="dashboard-content" class="hidden">
-            <div class="card stat-display">
-                <div class="stat-label">คุณเลิกสูบมาแล้ว</div>
-                <div class="stat-value" id="days-quit">0</div>
-                <div class="stat-label">วัน</div>
-            </div>
-
-            <div class="small-stat-grid">
-                <div class="small-stat-card">
-                    <div class="small-stat-label">เงินที่ประหยัดได้</div>
-                    <div class="small-stat-value" id="money-saved">0</div>
-                    <div class="small-stat-label">บาท</div>
+        <!-- Dashboard View (Hidden by default) -->
+        <div id="dashboard-view" class="hidden">
+            
+            <!-- SP Balance -->
+            <div class="stat-card flex items-center justify-between mt-4">
+                <div class="flex items-center">
+                    <span class="text-4xl mr-3" role="img" aria-label="Star">✨</span>
+                    <div>
+                        <p class="text-sm text-gray-500">SP คงเหลือ</p>
+                        <p class="text-2xl font-bold text-primary" id="sp-balance">0 SP</p>
+                    </div>
                 </div>
-                <div class="small-stat-card">
-                    <div class="small-stat-label">แต้ม SP Balance</div>
-                    <div class="small-stat-value" id="sp-balance">0</div>
-                    <div class="small-stat-label">SP</div>
+                <button onclick="checkIn()" id="checkin-button" class="bg-primary text-white text-sm font-semibold py-2 px-4 rounded-full hover:bg-opacity-90 transition">
+                    Daily Check-in (+10 SP)
+                </button>
+            </div>
+            
+            <!-- Key Stats -->
+            <div class="grid grid-cols-2 gap-4">
+                
+                <div class="stat-card text-center">
+                    <p class="text-xs text-gray-500">🚭 วันปลอดบุหรี่</p>
+                    <p class="text-3xl font-bold text-secondary mt-1" id="days-free">0</p>
                 </div>
+
+                <div class="stat-card text-center">
+                    <p class="text-xs text-gray-500">💰 เงินที่ประหยัดได้</p>
+                    <p class="text-3xl font-bold text-primary mt-1" id="money-saved">0 บาท</p>
+                </div>
+                
+                <div class="stat-card text-center col-span-2">
+                    <p class="text-xs text-gray-500">🚬 บุหรี่ที่ไม่ได้สูบ</p>
+                    <p class="text-3xl font-bold text-secondary mt-1" id="cigs-avoided">0 มวน</p>
+                </div>
+
             </div>
 
-            <button class="btn btn-checkin" id="checkin-btn" onclick="handleCheckIn()">
-                Daily Check-in (+10 SP)
-            </button>
-
-            <div class="card">
-                <h3>💖 ความสำเร็จด้านสุขภาพ</h3>
-                <ul class="milestone-list" id="milestone-list">
-                    <!-- Milestones will be injected here -->
-                </ul>
+            <!-- Profile & OpenChat Link -->
+            <div class="stat-card mt-4 p-4 flex flex-col items-center">
+                <p class="text-sm text-gray-500 mb-2">LINE User ID ของคุณ:</p>
+                <p class="text-xs break-all text-gray-400 mb-4" id="user-id">...</p>
+                <a id="community-link" target="_blank" class="w-full text-center bg-gray-200 text-primary font-semibold py-3 rounded-lg hover:bg-gray-300 transition">
+                    เข้าร่วม OpenChat Community
+                </a>
             </div>
 
-            <button class="btn btn-openchat" onclick="openOpenChat()">
-                เข้า Community พูดคุย (OpenChat)
-            </button>
         </div>
+
     </div>
 
     <script>
         // ***สำคัญ***: GAS Web App URL ของคุณ
-        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFTO3dMZYqAUaI-VDvLEgyafesLiWGY9cY7WOWXcweOmPz4HHyTomE0AE1qmjZf65krg/exec"; 
-        const OPEN_CHAT_URL = "https://line.me/ti/g2/YOUR_OPENCHAT_ID"; // **IMPORTANT**: Replace with actual OpenChat link
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFTO3dMZYqAUaI-VDvLEgyafesLiWGY9cY7WOWXcweOmPz4HHyTomE0AE1qmjZf65krg/exec";
+        // ***สำคัญ***: ลิงก์ OpenChat ของคุณ (ต้องแก้ไขเอง)
+        const OPENCHAT_URL = "YOUR_OPENCHAT_ID"; // **กรุณาเปลี่ยนเป็นลิงก์จริง**
 
         let userId = '';
-        let hasCheckedInToday = false;
 
-        initializeLiff(); // เรียกใช้งานทันที
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeLiff();
+            document.getElementById('setup-form').addEventListener('submit', handleSetupSubmit);
+        });
 
         async function initializeLiff() {
             try {
-                // LIFF ID Dashboard
+                // *** LIFF ID ที่ถูกต้องสำหรับ Dashboard App ***
                 await liff.init({ liffId: '2008192818-vW2RZNkO' }); 
 
                 if (!liff.isLoggedIn()) {
@@ -277,19 +147,28 @@
                 const profile = await liff.getProfile();
                 userId = profile.userId;
 
+                document.getElementById('user-id').textContent = userId;
+                document.getElementById('community-link').href = OPENCHAT_URL;
+
                 await loadDashboardData();
 
             } catch (error) {
-                console.error("LIFF Initialization failed", error);
-                document.getElementById('loading').textContent = `เกิดข้อผิดพลาดในการโหลด: ${error.message}`;
+                console.error("LIFF Initialization failed:", error);
+                document.getElementById('loading').innerHTML = `
+                    <div style="text-align:center; padding: 20px;">
+                        <p style="color:#e3342f; font-weight:bold;">❌ LIFF โหลดไม่ได้</p>
+                        <p style="font-size:0.9rem; color:#555;">กรุณาเปิดผ่าน LINE Official Account</p>
+                    </div>
+                `;
             } finally {
+                // แสดงเนื้อหาหลัก (ไม่ว่าจะเกิดข้อผิดพลาดหรือไม่)
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('main-content').classList.remove('hidden');
             }
         }
 
+        // --- GAS Communication Functions ---
         async function fetchGas(action, data = {}) {
-            // ไม่ต้องเช็ค Placeholder แล้ว เพราะแทนที่ URL จริงแล้ว
             const payload = { action, userId, ...data };
             const response = await fetch(GAS_WEB_APP_URL, {
                 method: 'POST',
@@ -299,129 +178,95 @@
             return await response.json();
         }
 
-        async function loadDashboardData() {
-            const result = await fetchGas('get_dashboard_data');
+        // --- Setup Logic ---
+        async function handleSetupSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const startDate = form.startDate.value;
+            const cigarettesPerDay = parseInt(form.cigsPerDay.value, 10);
+            const costPerPack = parseFloat(form.costPerPack.value);
 
-            if (result.success && result.data.requiresSetup) {
-                // Show Initial Setup Form
-                document.getElementById('setup-form').classList.remove('hidden');
-                document.getElementById('dashboard-content').classList.add('hidden');
-                return;
-            }
+            const submitBtn = document.querySelector('#setup-form button');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'กำลังบันทึก...';
 
-            if (result.success) {
-                const { stats, profile, hasCheckedInToday: checkedInStatus } = result.data;
-                hasCheckedInToday = checkedInStatus;
+            try {
+                const result = await fetchGas('setup_profile', {
+                    startDate,
+                    cigarettesPerDay,
+                    costPerPack
+                });
 
-                // Hide Setup Form, Show Dashboard
-                document.getElementById('setup-form').classList.add('hidden');
-                document.getElementById('dashboard-content').classList.remove('hidden');
-
-                // Render Stats
-                document.getElementById('days-quit').textContent = stats.daysQuit;
-                document.getElementById('money-saved').textContent = stats.moneySaved.toLocaleString('th-TH');
-                document.getElementById('sp-balance').textContent = profile.spBalance.toLocaleString('th-TH');
-
-                // Render Check-in Button State
-                const checkinBtn = document.getElementById('checkin-btn');
-                if (hasCheckedInToday) {
-                    checkinBtn.textContent = '✅ Check-in สำเร็จแล้ววันนี้';
-                    checkinBtn.classList.add('disabled');
-                    checkinBtn.disabled = true;
+                if (result.success) {
+                    Swal.fire('สำเร็จ', 'บันทึกข้อมูลเริ่มต้นเรียบร้อยแล้ว!', 'success').then(loadDashboardData);
                 } else {
-                    checkinBtn.textContent = 'Daily Check-in (+10 SP)';
-                    checkinBtn.classList.remove('disabled');
-                    checkinBtn.disabled = false;
+                    Swal.fire('ผิดพลาด', result.message || 'ไม่สามารถบันทึกข้อมูลได้', 'error');
+                }
+            } catch (e) {
+                Swal.fire('ผิดพลาด', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์', 'error');
+            }
+            
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'บันทึกและเริ่มติดตาม';
+        }
+
+        // --- Dashboard Logic ---
+        async function loadDashboardData() {
+            try {
+                const result = await fetchGas('get_dashboard_data');
+
+                if (result.success) {
+                    const data = result.data;
+                    document.getElementById('setup-view').classList.add('hidden');
+                    document.getElementById('dashboard-view').classList.remove('hidden');
+
+                    if (data.isSetup) {
+                        // Display Dashboard
+                        document.getElementById('days-free').textContent = data.daysFree || '0';
+                        document.getElementById('money-saved').textContent = data.moneySaved.toLocaleString('th-TH');
+                        document.getElementById('cigs-avoided').textContent = data.cigsAvoided.toLocaleString('th-TH');
+                        document.getElementById('sp-balance').textContent = data.spBalance.toLocaleString('th-TH') + ' SP';
+                        
+                        document.getElementById('checkin-button').disabled = data.checkedInToday;
+                        document.getElementById('checkin-button').textContent = data.checkedInToday ? 'วันนี้เช็คอินแล้ว' : 'Daily Check-in (+10 SP)';
+
+                    } else {
+                        // Show Setup Form
+                        document.getElementById('setup-view').classList.remove('hidden');
+                        document.getElementById('dashboard-view').classList.add('hidden');
+                    }
+                } else {
+                    // If get_dashboard_data fails, assume setup is needed or show error
+                    Swal.fire('ข้อผิดพลาด', result.message || 'ไม่สามารถโหลดข้อมูลแดชบอร์ดได้', 'error');
+                    document.getElementById('setup-view').classList.remove('hidden');
+                    document.getElementById('dashboard-view').classList.add('hidden');
                 }
 
-                // Render Milestones
-                const milestoneList = document.getElementById('milestone-list');
-                milestoneList.innerHTML = ''; // Clear previous
-                stats.milestones.forEach(m => {
-                    const icon = m.met ? '✅' : '⏳';
-                    const cssClass = m.met ? 'met' : 'pending';
-                    const text = m.met ? `**สำเร็จ:** ${m.name}` : `${m.name}`;
-                    const item = document.createElement('li');
-                    item.className = 'milestone-item';
-                    item.innerHTML = `<span class="milestone-icon ${cssClass}">${icon}</span><div>${text}</div>`;
-                    milestoneList.appendChild(item);
-                });
-
-            } else {
-                Swal.fire('ข้อผิดพลาด', result.message || 'ไม่สามารถโหลดข้อมูลได้', 'error');
+            } catch (e) {
+                console.error("Dashboard Load Error:", e);
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเพื่อโหลดข้อมูลได้', 'error');
             }
         }
 
-        async function handleInitialSetup() {
-            const startDate = document.getElementById('startDate').value;
-            const cigarettesPerDay = document.getElementById('cigsPerDay').value;
-            const costPerPack = document.getElementById('costPerPack').value;
+        async function checkIn() {
+            const btn = document.getElementById('checkin-button');
+            btn.disabled = true;
+            btn.textContent = 'กำลังเช็คอิน...';
 
-            if (!startDate || !cigarettesPerDay || !costPerPack) {
-                Swal.fire('ข้อมูลไม่ครบ', 'กรุณากรอกข้อมูลทั้งหมด', 'warning');
-                return;
+            try {
+                const result = await fetchGas('daily_checkin');
+
+                if (result.success) {
+                    Swal.fire('เช็คอินสำเร็จ', `คุณได้รับ ${result.data.spGained} SP!`, 'success').then(loadDashboardData);
+                } else {
+                    Swal.fire('ผิดพลาด', result.message || 'ไม่สามารถเช็คอินได้', 'error');
+                }
+            } catch (e) {
+                Swal.fire('ผิดพลาด', 'เกิดข้อผิดพลาดในการเชื่อมต่อ', 'error');
             }
-
-            const result = await fetchGas('initial_setup', {
-                startDate: startDate,
-                cigarettesPerDay: parseInt(cigarettesPerDay, 10),
-                costPerPack: parseFloat(costPerPack)
-            });
-
-            if (result.success) {
-                Swal.fire('สำเร็จ', 'บันทึกข้อมูลเริ่มต้นแล้ว! ยินดีต้อนรับสู่โปรแกรม', 'success').then(() => {
-                     loadDashboardData(); // Reload to show dashboard
-                });
-            } else {
-                Swal.fire('ข้อผิดพลาด', result.message || 'บันทึกข้อมูลเริ่มต้นไม่สำเร็จ', 'error');
-            }
-        }
-
-
-        async function handleCheckIn() {
-            if (hasCheckedInToday) return;
-
-            const checkinBtn = document.getElementById('checkin-btn');
-            checkinBtn.disabled = true;
-            checkinBtn.textContent = 'กำลังบันทึก...';
-
-            const result = await fetchGas('daily_checkin');
-
-            if (result.success) {
-                // Show success toast
-                Swal.fire({
-                    toast: true,
-                    position: 'top-end',
-                    icon: 'success',
-                    title: `Check-in สำเร็จ! ได้รับ ${result.data.spGained} SP`,
-                    showConfirmButton: false,
-                    timer: 2000
-                });
-
-                // Update UI instantly
-                document.getElementById('sp-balance').textContent = result.data.newSpBalance.toLocaleString('th-TH');
-                checkinBtn.textContent = '✅ Check-in สำเร็จแล้ววันนี้';
-                checkinBtn.classList.add('disabled');
-                hasCheckedInToday = true;
-
-            } else {
-                Swal.fire('ผิดพลาด', result.message || 'Check-in ไม่สำเร็จ', 'error');
-                checkinBtn.textContent = 'Daily Check-in (+10 SP)';
-                checkinBtn.classList.remove('disabled');
-                checkinBtn.disabled = false;
-            }
-        }
-
-        function openOpenChat() {
-            if (OPEN_CHAT_URL.includes("YOUR_OPENCHAT_ID")) {
-                Swal.fire('OpenChat', 'กรุณาตั้งค่าลิงก์ OpenChat ในโค้ดก่อนใช้งานจริง', 'info');
-            } else {
-                // In a real LIFF environment, this should open external browser or new window
-                liff.openWindow({ url: OPEN_CHAT_URL, external: true });
-
-                // Simple client-side counter/tracking can be added here if needed,
-                // but for this prototype, we rely on the action being taken.
-            }
+            
+            btn.disabled = false;
+            btn.textContent = 'Daily Check-in (+10 SP)';
         }
     </script>
 </body>
