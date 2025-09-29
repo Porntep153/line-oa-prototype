@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>บันทึกอารมณ์</title>
+    <script src="https://static.line-scdn.net/liff/sdk/v2/liff.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary-color: #7952B3; /* Purple */
+            --secondary-color: #6FBC82; /* Green */
+            --bg-color: #F4F7F6;
+            --font-family: 'Inter', sans-serif;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            color: #333;
+            box-sizing: border-box;
+        }
+        .container {
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        h1 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+        }
+        .form-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            border-radius: 10px;
+            background-color: #f7f7f7;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+        input[type="range"] {
+            width: 100%;
+            -webkit-appearance: none;
+            height: 8px;
+            background: #ddd;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            color: #777;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            min-height: 100px;
+        }
+        .btn-submit {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            background-color: var(--primary-color);
+            color: white;
+        }
+        .btn-submit:active {
+            background-color: #5d3f8f;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+        .mood-value, .craving-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loading">กำลังโหลด LIFF...</div>
+    <div class="container hidden" id="main-content">
+        <div class="card">
+            <h1>📝 บันทึกอารมณ์และความอยาก</h1>
+            <p style="text-align:center; color:#555; margin-bottom: 20px;">
+                บันทึกได้วันละ 2 ครั้ง (+5 SP/ครั้ง)
+            </p>
+
+            <form id="emotion-form">
+                <div class="form-group">
+                    <label for="mood">อารมณ์ของคุณในตอนนี้ (1 = แย่มาก, 5 = ดีมาก): <span class="mood-value" id="mood-output">3</span></label>
+                    <input type="range" id="mood" name="mood" min="1" max="5" value="3" oninput="document.getElementById('mood-output').textContent = this.value" required>
+                    <div class="range-labels">
+                        <span>1: แย่มาก</span>
+                        <span>5: ดีมาก</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="craving">ระดับความอยากสูบ (1 = ไม่อยากเลย, 5 = อยากมาก): <span class="craving-value" id="craving-output">3</span></label>
+                    <input type="range" id="craving" name="craving" min="1" max="5" value="3" oninput="document.getElementById('craving-output').textContent = this.value" required>
+                    <div class="range-labels">
+                        <span>1: ไม่อยากเลย</span>
+                        <span>5: อยากมาก</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="note">บันทึกสั้นๆ หรือเหตุการณ์ที่เกิดขึ้น:</label>
+                    <textarea id="note" name="note" placeholder="วันนี้เจออะไรมาบ้าง หรือทำไมถึงรู้สึกแบบนี้..." maxlength="200"></textarea>
+                </div>
+
+                <button type="submit" class="btn-submit">บันทึก (+5 SP)</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // REPLACE_WITH_YOUR_DEPLOYED_GAS_WEB_APP_URL
+        const GAS_WEB_APP_URL = "REPLACE_WITH_YOUR_DEPLOYED_GAS_WEB_APP_URL";
+        let userId = '';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeLiff();
+            document.getElementById('emotion-form').addEventListener('submit', handleLogSubmit);
+        });
+
+        async function initializeLiff() {
+            try {
+                await liff.init({ liffId: 'REPLACE_WITH_YOUR_LIFF_ID_EMOTION' }); // **IMPORTANT**: Replace with actual LIFF ID
+
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                    return;
+                }
+
+                const profile = await liff.getProfile();
+                userId = profile.userId;
+
+            } catch (error) {
+                console.error("LIFF Initialization failed", error);
+                Swal.fire('ข้อผิดพลาด', 'LIFF โหลดไม่ได้', 'error');
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+            }
+        }
+
+        async function fetchGas(action, data = {}) {
+            if (GAS_WEB_APP_URL.includes("REPLACE_WITH_YOUR_DEPLOYED_GAS_WEB_APP_URL")) {
+                 Swal.fire({
+                    icon: 'error',
+                    title: 'ข้อผิดพลาดการตั้งค่า',
+                    text: 'กรุณาแทนที่ GAS_WEB_APP_URL ด้วย URL จริงของ GAS Web App ก่อน'
+                });
+                return { success: false, message: "Configuration error." };
+            }
+            const payload = { action, userId, ...data };
+            const response = await fetch(GAS_WEB_APP_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            return await response.json();
+        }
+
+        async function handleLogSubmit(event) {
+            event.preventDefault();
+            const form = event.target;
+            const mood = parseInt(form.mood.value, 10);
+            const craving = parseInt(form.craving.value, 10);
+            const note = form.note.value;
+
+            const submitBtn = document.querySelector('.btn-submit');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'กำลังบันทึก...';
+
+            const result = await fetchGas('log_emotion', {
+                mood,
+                craving,
+                note
+            });
+
+            if (result.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'บันทึกสำเร็จ!',
+                    text: `คุณได้รับ ${result.data.spGained} SP`,
+                    confirmButtonText: 'ตกลง'
+                }).then(() => {
+                    // Reset form and UI
+                    form.reset();
+                    document.getElementById('mood-output').textContent = '3';
+                    document.getElementById('craving-output').textContent = '3';
+                });
+            } else {
+                Swal.fire('ผิดพลาด', result.message || 'บันทึกไม่สำเร็จ', 'error');
+            }
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'บันทึก (+5 SP)';
+        }
+    </script>
+</body>
+</html>

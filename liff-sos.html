@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SOS! อยากสูบ</title>
+    <script src="https://static.line-scdn.net/liff/sdk/v2/liff.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        :root {
+            --primary-color: #7952B3; /* Purple */
+            --secondary-color: #6FBC82; /* Green */
+            --bg-color: #F4F7F6;
+            --font-family: 'Inter', sans-serif;
+        }
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            box-sizing: border-box;
+            color: #333;
+        }
+        h1 {
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+        .btn-sos {
+            width: 90vmin; /* Ensure it's large and mobile-friendly */
+            height: 90vmin;
+            max-width: 350px;
+            max-height: 350px;
+            background-color: #e3342f; /* Red for SOS */
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            font-weight: 700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 20px rgba(227, 52, 47, 0.5);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 40px;
+        }
+        .btn-sos:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 10px rgba(227, 52, 47, 0.5);
+        }
+        .sos-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        .tip-card {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .tip-title {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+        .tip-text {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        .hidden {
+            display: none !important;
+        }
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loading">กำลังโหลด LIFF...</div>
+    <div class="container hidden" id="main-content">
+        <h1>🆘 เมื่อใจอยากสูบ... กดปุ่มนี้!</h1>
+
+        <button class="btn-sos" onclick="handleSosClick()">
+            <span class="sos-icon">🚨</span>
+            SOS! <br> อยากสูบ
+        </button>
+
+        <div class="tip-card" id="tip-display">
+            <div class="tip-title">พร้อมให้กำลังใจคุณเสมอ!</div>
+            <div class="tip-text">กดปุ่ม SOS เพื่อรับเคล็ดลับ CBT สุ่ม</div>
+        </div>
+    </div>
+
+    <script>
+        const CBT_TIPS = [
+            "🧠 **ลองดื่มน้ำเย็นช้าๆ 1 แก้ว** สัมผัสความเย็นที่คอจะช่วยลดความอยากได้ชั่วขณะ",
+            "🏃 **ออกไปเดิน 5 นาที** หรือทำกิจกรรมเบาๆ เพื่อเปลี่ยนโฟกัสจากความอยาก",
+            "🧘 **หายใจเข้าลึกๆ 10 ครั้ง** ช้าๆ แล้วปล่อยออก สติจะช่วยให้คุณผ่านมันไปได้",
+            "📞 **โทรหาเพื่อน** หรือใครสักคนที่พร้อมรับฟัง คุยเรื่องอื่นที่ไม่ใช่บุหรี่",
+            "🍏 **หาของขบเคี้ยวที่ดีต่อสุขภาพ** เช่น แครอท, หมากฝรั่ง, หรือผลไม้เปรี้ยวๆ",
+            "🚿 **เข้าห้องน้ำ ล้างหน้า หรืออาบน้ำ** การเปลี่ยนอุณหภูมิช่วยให้รีเซ็ตความรู้สึกได้",
+            "⏱️ **ใช้กฎ 5 นาที** บอกตัวเองว่า 'จะรอก่อน 5 นาที' มักจะช่วยให้ความอยากลดลง",
+            "✏️ **จดบันทึกความรู้สึก** ลงใน Emotion Log เพื่อทำความเข้าใจความอยากของคุณ",
+            "🏆 **ทบทวนเหตุผลที่คุณเลิก** มองไปที่เป้าหมายและเงินที่ประหยัดได้!",
+            "🖼️ **ดูรูปครอบครัว/คนที่คุณรัก** ย้ำเตือนว่าคุณทำเพื่อใคร"
+        ];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeLiff();
+        });
+
+        async function initializeLiff() {
+            try {
+                await liff.init({ liffId: 'REPLACE_WITH_YOUR_LIFF_ID_SOS' }); // **IMPORTANT**: Replace with actual LIFF ID
+
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                    return;
+                }
+            } catch (error) {
+                console.error("LIFF Initialization failed", error);
+                document.getElementById('tip-display').innerHTML = `<div class="tip-title" style="color:#e3342f;">ข้อผิดพลาด</div><div class="tip-text">LIFF โหลดไม่ได้: ${error.message}</div>`;
+            } finally {
+                document.getElementById('loading').classList.add('hidden');
+                document.getElementById('main-content').classList.remove('hidden');
+            }
+        }
+
+        function handleSosClick() {
+            // 1. Randomly select a tip
+            const randomIndex = Math.floor(Math.random() * CBT_TIPS.length);
+            const randomTip = CBT_TIPS[randomIndex];
+
+            // 2. Display the tip
+            const tipDisplay = document.getElementById('tip-display');
+            tipDisplay.innerHTML = `
+                <div class="tip-title" style="color: #e3342f;">🔥 อย่าเพิ่งยอมแพ้!</div>
+                <div class="tip-text">${randomTip}</div>
+            `;
+
+            // 3. Optional: Add haptic feedback for better mobile UX
+            if (liff.isApiAvailable('vibrate')) {
+                liff.vibrate(100);
+            }
+        }
+    </script>
+</body>
+</html>
