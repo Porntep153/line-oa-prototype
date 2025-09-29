@@ -180,7 +180,7 @@
 
         async function initializeLiff() {
             try {
-                // LIFF ID Emotion Log
+                // *** LIFF ID ที่ถูกต้องสำหรับ Emotion Log App ***
                 await liff.init({ liffId: '2008192826-awpz91Vd' }); 
 
                 if (!liff.isLoggedIn()) {
@@ -193,15 +193,15 @@
 
             } catch (error) {
                 console.error("LIFF Initialization failed", error);
-                Swal.fire('ข้อผิดพลาด', 'LIFF โหลดไม่ได้', 'error');
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อ LIFF ได้: ' + error.message, 'error');
             } finally {
+                // แสดงเนื้อหาหลักเสมอเมื่อ LIFF ทำงานเสร็จ
                 document.getElementById('loading').classList.add('hidden');
                 document.getElementById('main-content').classList.remove('hidden');
             }
         }
 
         async function fetchGas(action, data = {}) {
-            // ไม่ต้องเช็ค Placeholder แล้ว เพราะแทนที่ URL จริงแล้ว
             const payload = { action, userId, ...data };
             const response = await fetch(GAS_WEB_APP_URL, {
                 method: 'POST',
@@ -213,6 +213,13 @@
 
         async function handleLogSubmit(event) {
             event.preventDefault();
+            
+            if (!userId) {
+                Swal.fire('ข้อผิดพลาด', 'กรุณาเข้าสู่ระบบ LIFF อีกครั้ง', 'warning');
+                liff.login();
+                return;
+            }
+
             const form = event.target;
             const mood = parseInt(form.mood.value, 10);
             const craving = parseInt(form.craving.value, 10);
@@ -222,26 +229,30 @@
             submitBtn.disabled = true;
             submitBtn.textContent = 'กำลังบันทึก...';
 
-            const result = await fetchGas('log_emotion', {
-                mood,
-                craving,
-                note
-            });
-
-            if (result.success) {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'บันทึกสำเร็จ!',
-                    text: `คุณได้รับ ${result.data.spGained} SP`,
-                    confirmButtonText: 'ตกลง'
-                }).then(() => {
-                    // Reset form and UI
-                    form.reset();
-                    document.getElementById('mood-output').textContent = '3';
-                    document.getElementById('craving-output').textContent = '3';
+            try {
+                const result = await fetchGas('log_emotion', {
+                    mood,
+                    craving,
+                    note
                 });
-            } else {
-                Swal.fire('ผิดพลาด', result.message || 'บันทึกไม่สำเร็จ', 'error');
+
+                if (result.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'บันทึกสำเร็จ!',
+                        text: `คุณได้รับ ${result.data.spGained} SP`,
+                        confirmButtonText: 'ตกลง'
+                    }).then(() => {
+                        form.reset();
+                        document.getElementById('mood-output').textContent = '3';
+                        document.getElementById('craving-output').textContent = '3';
+                    });
+                } else {
+                    Swal.fire('ผิดพลาด', result.message || 'บันทึกไม่สำเร็จ', 'error');
+                }
+            } catch (e) {
+                console.error("GAS Fetch Error:", e);
+                Swal.fire('ผิดพลาด', 'เกิดข้อผิดพลาดในการเชื่อมต่อกับเซิร์ฟเวอร์ (GAS)', 'error');
             }
 
             submitBtn.disabled = false;
