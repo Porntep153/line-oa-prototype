@@ -133,13 +133,15 @@
             "🖼️ **ดูรูปครอบครัว/คนที่คุณรัก** ย้ำเตือนว่าคุณทำเพื่อใคร"
         ];
 
-        document.addEventListener('DOMContentLoaded', () => {
-            initializeLiff();
-        });
+        // ***สำคัญ***: GAS Web App URL ของคุณ
+        const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxFTO3dMZYqAUaI-VDvLEgyafesLiWGY9cY7WOWXcweOmPz4HHyTomE0AE1qmjZf65krg/exec"; 
+
+        initializeLiff(); // เรียกใช้งานทันที
 
         async function initializeLiff() {
             try {
-                await liff.init({ liffId: 'REPLACE_WITH_YOUR_LIFF_ID_SOS' }); // **IMPORTANT**: Replace with actual LIFF ID
+                // LIFF ID SOS
+                await liff.init({ liffId: '2008192823-rQ5mWRV4' }); 
 
                 if (!liff.isLoggedIn()) {
                     liff.login();
@@ -170,6 +172,8 @@
             if (liff.isApiAvailable('vibrate')) {
                 liff.vibrate(100);
             }
+            
+            // 4. (Optional) Log the SOS click to GAS/Sheet if required
         }
     </script>
 </body>
